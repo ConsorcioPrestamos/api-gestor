@@ -8,5 +8,5 @@ var multipart = require('connect-multiparty');
 var md_upload = multipart({ uploadDir:'./uploads' }); 
 
 ruta.post('/add/:idpadre/:tipo',md_upload, imagenesCtrl.uploadImage);
-
+ruta.get('/get', imagenesCtrl.getImagenes);
 module.exports = ruta;

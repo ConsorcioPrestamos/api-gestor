@@ -35,6 +35,20 @@ function uploadImage(req,res){
 	}else res.status(500).send({message:'Error, no se envio ningun archivo'});
 }
 
+function getImagenes(req,res){
+	pool.getConnection((err,connection)=>{
+		if(!err){
+			var sql = `SELECT * FROM imagenes`;
+			connection.query(sql,(err,result)=>{
+				if(!err){
+					res.status(200).send({result});
+				}else res.status(500).send({message:`Error, al consultar en la base de datos`});
+			});
+		}else res.status(500).send({message:`Error, al conecatr con la base de datos`});
+		connection.release();
+	})
+}
 module.exports = { 
-	uploadImage
+	uploadImage,
+	getImagenes
 }
