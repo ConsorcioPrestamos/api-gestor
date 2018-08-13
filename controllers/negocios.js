@@ -7,7 +7,7 @@ function addNegocio(req,res){
     if(!data.idcliente || !data.nombre_negocio || !data.giro || !data.tipo || !data.comentarios || !data.ubicacion || !data.idzona) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = ` INSERT INTO negocios VALUES (null, ${data.idcliente}, ${idzona}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
+            var sql = ` INSERT INTO negocios VALUES (null, ${data.idcliente}, ${data.idzona}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
             connection.query(sql,(err,result)=>{
                 if(!err){
                     var idnegocio = result.insertId;
@@ -85,6 +85,7 @@ function getDetalles(req,res){
                 SELECT 
                 negocios.idnegocio,
                 negocios.idcliente,
+                negocios.idzona,
                 negocios.nombre_negocio,
                 negocios.giro,
                 negocios.tipo,
@@ -92,9 +93,11 @@ function getDetalles(req,res){
                 negocios.ubicacion,
                 clientes.nombres as cliente_nom,
                 clientes.app_pat as cliente_ap,
-                clientes.app_mat as cliente_am
+                clientes.app_mat as cliente_am,
+                zonas.nombre_zona
                 FROM negocios
                 INNER JOIN clientes on clientes.idcliente = negocios.idcliente
+                INNER JOIN zonas on negocios.idzona = zonas.idzona
             `;
             connection.query(sql,(err,result)=>{
                 if(!err){

@@ -33,6 +33,8 @@ var clientesRoutes = require('./routes/clientes');
 var negociosRoutes = require('./routes/negocios');
 var investigacionesRoutes = require('./routes/investigaciones');
 var prestamosRoutes = require('./routes/prestamos');
+var cobrosRoutes = require('./routes/cobros');
+
 //Middlewares de rutas:
 app.use('/empresas',empresasRoutes);
 app.use('/empleados/',empleadosRoutes);
@@ -45,6 +47,8 @@ app.use('/clientes', clientesRoutes);
 app.use('/negocios', negociosRoutes);
 app.use('/investigaciones', investigacionesRoutes);
 app.use('/prestamos', prestamosRoutes);
+app.use('/cobros', cobrosRoutes);
+
 
 //pagina sin ruta//
 app.get('/',(req,res)=>{

@@ -12,7 +12,7 @@ function addCliente(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     var idcliente = result.insertId;
-                    sql = ` INSERT INTO negocios VALUES (null, ${idcliente}, ${data.id}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
+                    sql = ` INSERT INTO negocios VALUES (null, ${idcliente}, ${data.idzona}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
                     connection.query(sql,(err,result)=>{
                         if(!err){
                             var idnegocio = result.insertId;
