@@ -34,6 +34,7 @@ var negociosRoutes = require('./routes/negocios');
 var investigacionesRoutes = require('./routes/investigaciones');
 var prestamosRoutes = require('./routes/prestamos');
 var cobrosRoutes = require('./routes/cobros');
+var imagenesRoutes = require('./routes/imagenes');
 
 //Middlewares de rutas:
 app.use('/empresas',empresasRoutes);
@@ -48,6 +49,7 @@ app.use('/negocios', negociosRoutes);
 app.use('/investigaciones', investigacionesRoutes);
 app.use('/prestamos', prestamosRoutes);
 app.use('/cobros', cobrosRoutes);
+app.use('/imagenes', imagenesRoutes);
 
 
 //pagina sin ruta//

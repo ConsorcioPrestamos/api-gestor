@@ -4,10 +4,10 @@ var pool = config.pool;
 
 function addZona(req,res){
     var data = req.body;
-    if(!data.idsucursal || !data.nombre_zona || !data.colonias || !data.status) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
+    if(!data.idsucursal || !data.nombre_zona || !data.colonias || !data.status || !data.idempleado) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `INSERT INTO zonas VALUES (null,'${data.idsucursal}' ,null, '${data.nombre_zona.toUpperCase()}', '${data.colonias.toUpperCase()}', '${data.status.toUpperCase()}')`;
+            var sql = `INSERT INTO zonas VALUES (null,'${data.idsucursal}' ,${data.idempleado}, '${data.nombre_zona.toUpperCase()}', '${data.colonias.toUpperCase()}', '${data.status.toUpperCase()}')`;
             connection.query(sql,(err,result)=>{
             if(!err){
                 res.status(200).send({result});

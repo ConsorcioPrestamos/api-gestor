@@ -70,7 +70,7 @@ function login(req,res){
                 sucursales.nombre as sucursal_nombre
                 from usuarios 
                 INNER JOIN empleados on empleados.idempleado = usuarios.idempleado
-                INNER JOIN sucursales on empleados.idempleado = sucursales.idsucursal
+                LEFT JOIN sucursales on empleados.idempleado = sucursales.idsucursal
                 WHERE usuario = '${data.usuario}' AND password = '${data.password}';
             `;
             connection.query(sql,(err,result)=>{
