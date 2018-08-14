@@ -26,7 +26,7 @@ function uploadImage(req,res){
 				connection.query(sql,(err,result)=>{
 					if(!err){
 						console.log(`Imagen guardada con exito`);
-						res.status(200).send(result);
+						res.status(200).send({result});
 					}else res.status(500).send({message:`Error, al guardar en la base de datos`});
 					connection.destroy();
 				});
