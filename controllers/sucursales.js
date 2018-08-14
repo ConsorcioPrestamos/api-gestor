@@ -8,7 +8,7 @@ function addSucursal(req,res){
     if(!data.nombre || !data.telefono || !data.hora_inicio || !data.hora_fin || !data.callenum || !data.colonia || !data.poblacion || !data.municipio || !data.estado || !data.cp || !data.nombre_red.toUpperCase() || !data.url) return res.status(500).send({message:`Error, no se enviaron todos los datos`});
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `INSERT INTO sucursales VALUES(null,null,'${data.nombre.toUpperCase()}','${data.telefono.toUpperCase()}','${data.hora_inicio.toUpperCase()}','${data.hora_fin.toUpperCase()}','${data.callenum.toUpperCase()}','${data.colonia.toUpperCase()}','${data.poblacion.toUpperCase()}','${data.municipio.toUpperCase()}','${data.estado.toUpperCase()}','${data.cp.toUpperCase()}')`;
+            var sql = `INSERT INTO sucursales VALUES(null,null,'${data.nombre.toUpperCase()}','${data.telefono.toUpperCase()}','${data.hora_inicio.toUpperCase()}','${data.hora_fin.toUpperCase()}','${data.callenum.toUpperCase()}','${data.colonia.toUpperCase()}','${data.poblacion.toUpperCase()}','${data.municipio.toUpperCase()}','${data.estado.toUpperCase()}','${data.cp}')`;
             connection.query(sql,(err,result)=>{
                 if(!err){
                     var idsucursal = result.insertId;
