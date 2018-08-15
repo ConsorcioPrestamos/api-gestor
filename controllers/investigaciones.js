@@ -95,7 +95,7 @@ function getInvestgacionesPendientes(req,res){
                 SELECT
                 idinvestigacion,
                 investigaciones.idcliente,
-                idnegocio,
+                investigaciones.idnegocio,
                 clientes.nombres,
                 clientes.app_pat,
                 clientes.app_mat,
