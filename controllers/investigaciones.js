@@ -94,7 +94,7 @@ function getInvestgacionesPendientes(req,res){
             var sql = `
                 SELECT
                 idinvestigacion,
-                idcliente,
+                investigaciones.idcliente,
                 idnegocio,
                 clientes.nombres,
                 clientes.app_pat,
