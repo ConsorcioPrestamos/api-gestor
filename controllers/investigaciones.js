@@ -87,7 +87,23 @@ function getInvestgaciones(req,res){
         connection.release();
     })
 }
+
+function getInvestgacionesPendientes(req,res){
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql = `SELECT * FROM investigaciones WHERE status='PENDIENTE'`;
+            connection.query(sql,(err,result)=>{
+                if(!err){
+                    res.status(200).send({result});
+                }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+            });        
+        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        connection.release();
+    })
+}
+
 module.exports ={
     updateInvestigacion,
-    getInvestgaciones
+    getInvestgaciones,
+    getInvestgacionesPendientes
 }
