@@ -5,7 +5,17 @@ var pool = config.pool;
 function addNegocio(req,res){
     var data = req.body;
     console.log(data);
-    if(!data.idcliente || !data.nombre_negocio || !data.giro || !data.tipo || !data.comentarios || !data.ubicacion || !data.idzona) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
+    
+    if(
+        !data.idcliente ||
+        !data.nombre_negocio || 
+        !data.giro || 
+        !data.tipo || 
+        !data.comentarios || 
+        !data.ubicacion || 
+        !data.idzona
+    ) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
+
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql = ` INSERT INTO negocios VALUES (null, ${data.idcliente}, ${data.idzona}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;

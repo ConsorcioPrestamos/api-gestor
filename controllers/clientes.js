@@ -2,27 +2,67 @@
 const config = require('../config');
 var pool = config.pool;
 
+/*
+	NOTAS
+	Al añadir un nuevo cliente se añaden un nuevo negocio y una nueva investigacion.
+*/
+
 function addCliente(req,res){
     var data = req.body;
-    /**Al añadir un nuevo cliente se añaden un nuevo negocio y una nueva investigacion */
-    if(!data.nombres || !data.app_pat || !data.app_mat || !data.telefonos || !data.nombre_negocio || !data.giro || !data.tipo || !data.comentarios || !data.ubicacion || !data.idzona) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
+    if(
+    	//Validar datos del cliente
+    	!data.nombres || 
+    	!data.app_pat || 
+    	!data.app_mat || 
+    	!data.telefonos || 
+    	//validar datos del negocio
+    	!data.nombre_negocio || 
+    	!data.giro || 
+    	!data.tipo || 
+    	!data.comentarios || 
+    	!data.ubicacion || //lat,lng
+    	!data.idzona ||
+    	!data.propietario || //si, no
+    	!data.antiguedad || 
+    	!data.arrendamiento //si, no
+    ) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
+
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `INSERT INTO clientes VALUES(null, '${data.nombres.toUpperCase()}', '${data.app_pat.toUpperCase()}', '${data.app_mat.toUpperCase()}', '${data.telefonos}', 'ACTIVO')`;
-            connection.query(sql,(err,result)=>{
+            var sql = `INSERT INTO clientes VALUES(null, 
+            	'${data.nombres.toUpperCase()}', 
+            	'${data.app_pat.toUpperCase()}', 
+            	'${data.app_mat.toUpperCase()}', 
+            	'${data.telefonos}', 
+            	'ACTIVO')`;
+            connection.query(sql,(err,cliente)=>{
                 if(!err){
-                    var idcliente = result.insertId;
-                    sql = ` INSERT INTO negocios VALUES (null, ${idcliente}, ${data.idzona}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
-                    connection.query(sql,(err,result)=>{
+                    var idcliente = cliente.insertId;
+                    sql = ` INSERT INTO negocios VALUES (
+                    	null, 
+                    	${idcliente}, 
+                    	${data.idzona}, 
+                    	'${data.nombre_negocio.toUpperCase()}', 
+                    	'${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', 
+                    	'${data.comentarios.toUpperCase()}', 
+                    	'${data.ubicacion}', 
+                    	'${data.propietario.toUpperCase()}', 
+                    	'${data.antiguedad.toUpperCase()}', 
+                    	'${data.arrendamiento.toUpperCase}')`;
+                    connection.query(sql,(err,negocio)=>{
                         if(!err){
-                            var idnegocio = result.insertId;
+                            var idnegocio = negocio.insertId;
                             sql = `INSERT INTO investigaciones (idinvestigacion,idcliente,idnegocio,status) VALUES(null, ${idcliente}, ${idnegocio}, 'PENDIENTE')`;
-                            connection.query(sql,(err,result)=>{
+                            connection.query(sql,(err,investigacion)=>{
                                 if(!err){
-                                    res.status(200).send({result});
+                                    res.status(200).send({cliente,negocio,investigacion});
                                 }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
                             }); 
-                        }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+                        }else {
+                        	sql=`DELETE FROM clientes WHERE idcliente = ${idcliente}`;
+                        	connection.query()
+                        	res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+                        }
                     }); 
                 }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
             });        

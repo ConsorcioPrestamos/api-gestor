@@ -7,6 +7,9 @@ var multipart = require('connect-multiparty');
 // Le asigamos el directorio donde estan las imagenes momentaneamente
 var md_upload = multipart({ uploadDir:'./uploads' }); 
 
+
 ruta.post('/add/:idpadre/:tipo',md_upload, imagenesCtrl.uploadImage);
 ruta.get('/get', imagenesCtrl.getImagenes);
+ruta.post('/add/clienteNuevo/:idCliente/:idNegocio',md_upload,imagenesCtrl.clienteNuevoImages)
+
 module.exports = ruta;
