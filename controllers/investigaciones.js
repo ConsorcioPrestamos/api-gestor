@@ -91,7 +91,20 @@ function getInvestgaciones(req,res){
 function getInvestgacionesPendientes(req,res){
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `SELECT * FROM investigaciones WHERE status='PENDIENTE'`;
+            var sql = `
+                SELECT
+                idinvestigacion,
+                idcliente,
+                idnegocio,
+                clientes.nombres,
+                clientes.app_pat,
+                clientes.app_mat,
+                clientes.telefonos,
+                negocios.nombre_negocio
+                FROM investigaciones
+                INNER JOIN clientes ON clientes.idcliente = investigaciones.idcliente
+                INNER JOIN negocios ON negocios.idnegocio = investigaciones.idnegocio
+            `;
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
