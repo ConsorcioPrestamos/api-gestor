@@ -143,6 +143,7 @@ function getInvestgacionesPendientes(req,res){
                 FROM investigaciones
                 INNER JOIN clientes ON clientes.idcliente = investigaciones.idcliente
                 INNER JOIN negocios ON negocios.idnegocio = investigaciones.idnegocio
+                WHERE investigaciones.status='PENDIENTE'
             `;
             connection.query(sql,(err,result)=>{
                 if(!err){
