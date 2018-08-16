@@ -8,11 +8,50 @@ function updateInvestigacion(req,res){
     var idinvestigacion = req.params.id;
     console.log(data);
     var fecha_actual = moment().format('YYYY-MM-DD');
-    if(!data.idcliente || !data.idnegocio || !data.nombres || !data.app_pat || !data.app_mat || !data.telefonos || !data.nombre_negocio || !data.giro || !data.tipo || !data.comentarios || !data.ubicacion
-    || !data.fecha_nacimiento || !data.edad || !data.edo_civil || !data.calle || !data.num_ext || !data.num_int || !data.colonia || !data.municipio || !data.estado 
-    || !data.poblacion ||!data.tel || !data.casa_propia || !data.num_dependientes || !data.monto_credito || !data.tipo_comprobante || !data.calle_negocio 
-    || !data.num_ext_negocio || !data.num_int_negocio || !data.colonia_negocio || !data.municipio_negocio || !data.estado_negocio || !data.poblacion_negocio
-    || !data.horario || !data.nombre_aval || !data.tiempo_aval || !data.tel_aval || !data.nombre_fam || !data.parentezco || !data.tel_fam || !data.como_supo || !data.especificar) 
+    if(
+        !data.idcliente 
+        || !data.idnegocio 
+        || !data.nombres 
+        || !data.app_pat 
+        || !data.app_mat 
+        || !data.telefonos 
+        || !data.nombre_negocio 
+        || !data.giro 
+        || !data.tipo 
+        || !data.comentarios 
+        || !data.ubicacion
+        || !data.fecha_nacimiento 
+        || !data.edad 
+        || !data.edo_civil 
+        || !data.calle 
+        || !data.num_ext 
+        || !data.num_int 
+        || !data.colonia 
+        || !data.municipio 
+        || !data.estado 
+        || !data.poblacion 
+        || !data.tel 
+        || !data.casa_propia 
+        || !data.num_dependientes 
+        || !data.monto_credito 
+        || !data.tipo_comprobante 
+        || !data.calle_negocio 
+        || !data.num_ext_negocio 
+        || !data.num_int_negocio 
+        || !data.colonia_negocio 
+        || !data.municipio_negocio 
+        || !data.estado_negocio 
+        || !data.poblacion_negocio
+        || !data.horario 
+        || !data.nombre_aval 
+        || !data.tiempo_aval 
+        || !data.tel_aval 
+        || !data.nombre_fam 
+        || !data.parentezco 
+        || !data.tel_fam 
+        || !data.como_supo 
+        || !data.especificar
+    ) 
     return res.status(500).send({message:`Error, no se enviaron todos los campos`});
     /**al actualizar una investigacion se actualizan los datos del cliente y del negocio */
     pool.getConnection((err,connection)=>{
