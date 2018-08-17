@@ -117,22 +117,24 @@ function imagenesNuevoCliente(req, res) {
 							} else return res.status(500).send({ message: `Error al guardar imagen contrato en cloudinary ${err}` });
 						});
 					}else{ flagContrato = 1; }
-					for (let i = 0; i <= 5; i++) {
-						if (req.files[i] && i<5) {
-							console.log('NEGOCIOS: ######## ');
-							var ruta_temporal = req.files[i].path;
-							console.log(req.files[i]);
-							cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
-								if (!err) {
-									var url = result.url;
-									var public_id = result.public_id
-									var sql = `INSERT imagenes VALUES(null,${idnegocio},'${public_id}','NEGOCIOS','${url}') `;
-									connection.query(sql,(err,result)=>{
-										if(!err) console.log(result);
-										if(err) return res.status(500).send({ message: `Error al guardar negocios contrato en bd ${err}` });
-									});
-								} else return res.status(500).send({ message: `Error al guardar imagen negocios en cloudinary ${err}` });
-							});
+					for (let i = 0; i <= 99; i++) {
+						if (req.files[i]) {
+							if(i<5){
+								console.log('NEGOCIOS: ######## ');
+								var ruta_temporal = req.files[i].path;
+								console.log(req.files[i]);
+								cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+									if (!err) {
+										var url = result.url;
+										var public_id = result.public_id
+										var sql = `INSERT imagenes VALUES(null,${idnegocio},'${public_id}','NEGOCIOS','${url}') `;
+										connection.query(sql,(err,result)=>{
+											if(!err) console.log(result);
+											if(err) return res.status(500).send({ message: `Error al guardar negocios contrato en bd ${err}` });
+										});
+									} else return res.status(500).send({ message: `Error al guardar imagen negocios en cloudinary ${err}` });
+								});
+							}
 						}else{
 							flagNegocio = 1;
 						}
