@@ -118,7 +118,7 @@ function imagenesNuevoCliente(req, res) {
 						});
 					}else{ flagContrato = 1; }
 					for (let i = 0; i <= 5; i++) {
-						if (req.files[i]) {
+						if (req.files[i] && i < 5) {
 							console.log('NEGOCIOS: ######## ');
 							var ruta_temporal = req.files[i].path;
 							console.log(req.files[i]);
