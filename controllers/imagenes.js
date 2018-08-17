@@ -62,7 +62,7 @@ function imagenesNuevoCliente(req, res) {
 			var flagContrato = 0;
 			var flagNegocio = 0;
 			if (!err) {
-				if (flagIne == 0 || flagContrato == 0 || flagDomicilio == 0 || flagNegocio==0) {
+				while(flagIne == 0 || flagContrato == 0 || flagDomicilio == 0 || flagNegocio==0) {
 					if (req.files.INE) { //valida si hay imagen ine y la guarda
 						console.log('INE: ', req.files.INE);
 						var ruta_temporal = req.files.INE.path;
@@ -138,12 +138,14 @@ function imagenesNuevoCliente(req, res) {
 							flagNegocio = 1;
 						}
 					}
-					if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
-						console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
-						res.status(200).send({result:'Datos guardados'});
-					}else{
-						console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
-					}
+					
+				}
+				
+				if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
+					console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
+					res.status(200).send({result:'Datos guardados'});
+				}else{
+					console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
 				}
 
 			} else return res.status(500).send({ message: `Error al conectar con la base de datos:${err}` });
