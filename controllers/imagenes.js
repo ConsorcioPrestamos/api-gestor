@@ -57,9 +57,12 @@ function imagenesNuevoCliente(req, res) {
 	if (req.files) {
 		console.log(req.files);
 		pool.getConnection((err, connection) => {
-			var flag = 0;
+			var flagIne = 0;
+			var flagDomicilio = 0;
+			var flagContrato = 0;
+			var flagNegocio = 0;
 			if (!err) {
-				if (flag == 0) {
+				if (flagIne == 0 || flagContrato == 0 || flagDomicilio == 0 || flagNegocio==0) {
 					if (req.files.INE) { //valida si hay imagen ine y la guarda
 						console.log('INE: ', req.files.INE);
 						var ruta_temporal = req.files.INE.path;
@@ -71,13 +74,13 @@ function imagenesNuevoCliente(req, res) {
 								connection.query(sql,(err,result)=>{
 									if(!err){
 										console.log(result);
-										flag = 1;
+										flagIne = 1;
 									}
 									if(err) return res.status(500).send({ message: `Error al guardar imagen ine en bd ${err}` });
 								});
 							} else return res.status(500).send({ message: `Error al guardar imagen ine en cloudinary ${err}` });
 						});
-					}else{ flag = 1; } //termina subir imagen ine
+					}else{ flagIne = 1; } //termina subir imagen ine
 					if(req.files.DOMICILIO) { //valida si hay imagen de domicilio y la sube
 						console.log('DOMICILIO: ', req.files.DOMICILIO);
 						var ruta_temporal = req.files.DOMICILIO.path;
@@ -89,13 +92,13 @@ function imagenesNuevoCliente(req, res) {
 								connection.query(sql,(err,result)=>{
 									if(!err){ 
 										console.log(result);
-										flag = 2;
+										flagDomicilio = 2;
 									}
 									if(err) return res.status(500).send({ message: `Error al guardar imagen domicilio en bd ${err}` });
 								});
 							} else return res.status(500).send({ message: `Error al guardar imagen domicilio en cloudinary ${err}` });
 						});
-					}else{ flag = 2; } // termina de subir imagen de domicilio
+					}else{ flagDomicilio = 2; } // termina de subir imagen de domicilio
 					if (req.files.CONTRATO) { //valida si hay imagen del contrato y la sube
 						console.log('CONTRATO: ', req.files.CONTRATO);
 						var ruta_temporal = req.files.CONTRATO.path;
@@ -107,13 +110,13 @@ function imagenesNuevoCliente(req, res) {
 								connection.query(sql,(err,result)=>{
 									if(!err){
 										console.log(result);
-										flag = 3;
+										flagContrato = 3;
 									}
 									if(err) return res.status(500).send({ message: `Error al guardar imagen contrato en bd ${err}` });
 								});
 							} else return res.status(500).send({ message: `Error al guardar imagen contrato en cloudinary ${err}` });
 						});
-					}else{ flag = 3; }
+					}else{ flagContrato = 3; }
 					for (let i = 0; i <= 5; i++) {
 						if (req.files[i] && i<5) {
 							console.log('NEGOCIOS: ######## ');
@@ -131,10 +134,10 @@ function imagenesNuevoCliente(req, res) {
 								} else return res.status(500).send({ message: `Error al guardar imagen negocios en cloudinary ${err}` });
 							});
 						}else{
-							flag = 4;
+							flagNegocio = 4;
 						}
 					}
-					if(flag==4){
+					if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
 						res.status(200).send({result:'Datos guardados'});
 					}
 				}
