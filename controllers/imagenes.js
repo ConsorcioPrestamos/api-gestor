@@ -92,13 +92,13 @@ function imagenesNuevoCliente(req, res) {
 								connection.query(sql,(err,result)=>{
 									if(!err){ 
 										console.log(result);
-										flagDomicilio = 2;
+										flagDomicilio = 1;
 									}
 									if(err) return res.status(500).send({ message: `Error al guardar imagen domicilio en bd ${err}` });
 								});
 							} else return res.status(500).send({ message: `Error al guardar imagen domicilio en cloudinary ${err}` });
 						});
-					}else{ flagDomicilio = 2; } // termina de subir imagen de domicilio
+					}else{ flagDomicilio = 1; } // termina de subir imagen de domicilio
 					if (req.files.CONTRATO) { //valida si hay imagen del contrato y la sube
 						console.log('CONTRATO: ', req.files.CONTRATO);
 						var ruta_temporal = req.files.CONTRATO.path;
@@ -110,13 +110,13 @@ function imagenesNuevoCliente(req, res) {
 								connection.query(sql,(err,result)=>{
 									if(!err){
 										console.log(result);
-										flagContrato = 3;
+										flagContrato = 1;
 									}
 									if(err) return res.status(500).send({ message: `Error al guardar imagen contrato en bd ${err}` });
 								});
 							} else return res.status(500).send({ message: `Error al guardar imagen contrato en cloudinary ${err}` });
 						});
-					}else{ flagContrato = 3; }
+					}else{ flagContrato = 1; }
 					for (let i = 0; i <= 5; i++) {
 						if (req.files[i] && i<5) {
 							console.log('NEGOCIOS: ######## ');
@@ -134,7 +134,7 @@ function imagenesNuevoCliente(req, res) {
 								} else return res.status(500).send({ message: `Error al guardar imagen negocios en cloudinary ${err}` });
 							});
 						}else{
-							flagNegocio = 4;
+							flagNegocio = 1;
 						}
 					}
 					if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
