@@ -28,7 +28,7 @@ function addNegocio(req,res){
                             var i= result[0];
                             sql = `INSERT INTO investigaciones VALUES(null, ${data.idcliente}, ${idnegocio}, '${i.fecha_nacimiento}', '${i.edad}', '${i.edo_civil}',
                             '${i.calle}', '${i.num_ext}', '${i.num_int}', '${i.colonia}', '${i.municipio}', '${i.estado}', '${i.poblacion}', '${i.tel}', '${i.casa_propia}',
-                            '${i.num_dependientes}',null, '${i.tipo_comprobante}', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'PENDIENTE')`;
+                            '${i.num_dependientes}',null, '${i.tipo_comprobante}', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,'PENDIENTE')`;
                             connection.query(sql,(err,result)=>{
                                 if(!err){
                                     res.status(200).send({result});

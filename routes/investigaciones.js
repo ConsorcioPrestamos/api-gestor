@@ -6,5 +6,6 @@ var investigacionesCtrl = require('../controllers/investigaciones');
 route.put('/update/:id',investigacionesCtrl.updateInvestigacion);
 route.get('/get', investigacionesCtrl.getInvestgaciones);
 route.get('/getPendientes', investigacionesCtrl.getInvestgacionesPendientes);
+route.get('/getRealizadas', investigacionesCtrl.getInvestgacionesRealizadas);
 
 module.exports = route;

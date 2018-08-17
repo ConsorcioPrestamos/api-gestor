@@ -14,18 +14,15 @@ function updateInvestigacion(req,res){
         || !data.nombres 
         || !data.app_pat 
         || !data.app_mat 
-        || !data.telefonos 
         || !data.nombre_negocio 
         || !data.giro 
         || !data.tipo 
         || !data.comentarios 
-        || !data.ubicacion
         || !data.fecha_nacimiento 
         || !data.edad 
         || !data.edo_civil 
         || !data.calle 
         || !data.num_ext 
-        || !data.num_int 
         || !data.colonia 
         || !data.municipio 
         || !data.estado 
@@ -37,7 +34,6 @@ function updateInvestigacion(req,res){
         || !data.tipo_comprobante 
         || !data.calle_negocio 
         || !data.num_ext_negocio 
-        || !data.num_int_negocio 
         || !data.colonia_negocio 
         || !data.municipio_negocio 
         || !data.estado_negocio 
@@ -50,7 +46,7 @@ function updateInvestigacion(req,res){
         || !data.parentezco 
         || !data.tel_fam 
         || !data.como_supo 
-        || !data.especificar
+        || !data.comentarios_capturista
     ) 
     return res.status(500).send({message:`Error, no se enviaron todos los campos`});
     /**al actualizar una investigacion se actualizan los datos del cliente y del negocio */
@@ -94,8 +90,9 @@ function updateInvestigacion(req,res){
                                 parentezco = '${data.parentezco.toUpperCase()}',
                                 tel_fam = '${data.tel_fam}',
                                 como_supo = '${data.como_supo.toUpperCase()}',
-                                especificar = '${data.especificar.toUpperCase()}',
+                                especificar = '${data.especificar}',
                                 fecha = '${fecha_actual}',
+                                comentarios_capturista = '${data.comentarios_capturista.toUpperCase()}',
                                 status = 'REALIZADA'
                                 WHERE idinvestigacion = ${idinvestigacion}
                             `;
@@ -155,8 +152,37 @@ function getInvestgacionesPendientes(req,res){
     })
 }
 
+function getInvestgacionesRealizadas(req,res){
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql = `
+                SELECT
+                idinvestigacion,
+                investigaciones.idcliente,
+                investigaciones.idnegocio,
+                clientes.nombres,
+                clientes.app_pat,
+                clientes.app_mat,
+                clientes.telefonos,
+                negocios.nombre_negocio
+                FROM investigaciones
+                INNER JOIN clientes ON clientes.idcliente = investigaciones.idcliente
+                INNER JOIN negocios ON negocios.idnegocio = investigaciones.idnegocio
+                WHERE investigaciones.status='REALIZADA'
+            `;
+            connection.query(sql,(err,result)=>{
+                if(!err){
+                    res.status(200).send({result});
+                }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+            });        
+        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        connection.release();
+    })
+}
+
 module.exports ={
     updateInvestigacion,
     getInvestgaciones,
-    getInvestgacionesPendientes
+    getInvestgacionesPendientes,
+    getInvestgacionesRealizadas
 }

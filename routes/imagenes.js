@@ -10,6 +10,7 @@ var md_upload = multipart({ uploadDir:'./uploads' });
 
 ruta.post('/add/:idpadre/:tipo',md_upload, imagenesCtrl.uploadImage);
 ruta.get('/get', imagenesCtrl.getImagenes);
-ruta.post('/add/clienteNuevo/:idCliente/:idNegocio',md_upload,imagenesCtrl.clienteNuevoImages)
+// ruta.post('/add/clienteNuevo/:idCliente/:idNegocio',md_upload,imagenesCtrl.clienteNuevoImages)
+ruta.post('/nuevoCliente/:idCliente/:idNegocio', md_upload, imagenesCtrl.imagenesNuevoCliente);
 
 module.exports = ruta;

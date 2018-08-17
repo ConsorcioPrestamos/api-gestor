@@ -14,19 +14,22 @@ function addCliente(req,res){
     	!data.nombres || 
     	!data.app_pat || 
     	!data.app_mat || 
-    	!data.telefonos || 
     	//validar datos del negocio
     	!data.nombre_negocio || 
     	!data.giro || 
     	!data.tipo || 
     	!data.comentarios || 
-    	!data.ubicacion || //lat,lng
     	!data.idzona ||
     	!data.propietario || //si, no
     	!data.antiguedad || 
     	!data.arrendamiento //si, no
     ) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
-
+    if(!data.telefonos){
+        data.telefonos=null;
+    }
+    if(!data.ubicacion){
+        data.ubicacion=null;
+    }
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql = `INSERT INTO clientes VALUES(null, 
