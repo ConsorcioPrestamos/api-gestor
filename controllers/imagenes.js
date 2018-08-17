@@ -126,7 +126,7 @@ function imagenesNuevoCliente(req, res) {
 								if (!err) {
 									var url = result.url;
 									var public_id = result.public_id
-									var sql = `INSERT imagenes VALUES(null,${idnegocio},'${public_id}','NEGOCIOS','${url}') `;
+									var sql = `INSERT imagenes VALUES(null,${idnegocio},'${public_id}','NEGOCIO','${url}') `;
 									connection.query(sql,(err,result)=>{
 										if(!err) console.log(result);
 										flagNegocio = 1;
@@ -139,7 +139,10 @@ function imagenesNuevoCliente(req, res) {
 						}
 					}
 					if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
+						console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
 						res.status(200).send({result:'Datos guardados'});
+					}else{
+						console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
 					}
 				}
 
