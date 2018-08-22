@@ -5,13 +5,25 @@ module.exports = {
     connection:()=>{return mysql.createConnection({ 
         host: "sql149.main-hosting.eu",
         user: "u262589863_prest", 
-        password: "b1pCF8JsD", 
+        password: "6LMHbFbNo", 
         database: "u262589863_prest"
     })},  
     pool: mysql.createPool({
         host: "sql149.main-hosting.eu",
         user: "u262589863_prest", 
-        password: "b1pCF8JsD", 
+        password: "6LMHbFbNo", 
         database: "u262589863_prest" 
     })
+    // pool: mysql.createPool({
+    //     host: "localhost",
+    //     user: "root", 
+    //     password: "", 
+    //     database: "u262589863_prest" 
+    // }),
+    // connection:()=>{return mysql.createConnection({ 
+    //     host: "localhost",
+    //     user: "root", 
+    //     password: "", 
+    //     database: "u262589863_prest" 
+    // })}
 }

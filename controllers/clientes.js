@@ -46,12 +46,13 @@ function addCliente(req,res){
                     	${idcliente}, 
                     	${data.idzona}, 
                     	'${data.nombre_negocio.toUpperCase()}', 
-                    	'${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', 
+                    	'${data.giro.toUpperCase()}', 
+                        '${data.tipo.toUpperCase()}', 
                     	'${data.comentarios.toUpperCase()}', 
                     	'${data.ubicacion}', 
                     	'${data.propietario.toUpperCase()}', 
                     	'${data.antiguedad.toUpperCase()}', 
-                    	'${data.arrendamiento.toUpperCase}')`;
+                    	'${data.arrendamiento.toUpperCase()}')`;
                     connection.query(sql,(err,negocio)=>{
                         if(!err){
                             var idnegocio = negocio.insertId;

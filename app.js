@@ -32,7 +32,7 @@ var tiposCreditoRoutes = require('./routes/tiposCredito');
 var clientesRoutes = require('./routes/clientes');
 var negociosRoutes = require('./routes/negocios');
 var investigacionesRoutes = require('./routes/investigaciones');
-var prestamosRoutes = require('./routes/prestamos');
+var creditosRoutes = require('./routes/creditos');
 var cobrosRoutes = require('./routes/cobros');
 var imagenesRoutes = require('./routes/imagenes');
 
@@ -47,7 +47,7 @@ app.use('/tiposCreditos', tiposCreditoRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/negocios', negociosRoutes);
 app.use('/investigaciones', investigacionesRoutes);
-app.use('/prestamos', prestamosRoutes);
+app.use('/creditos', creditosRoutes);
 app.use('/cobros', cobrosRoutes);
 app.use('/imagenes', imagenesRoutes);
 
