@@ -5,6 +5,9 @@ const contCreditos = require('../controllers/creditos');
 
 ruta.get('/get', contCreditos.getCreditos);
 ruta.get('/get/sin_aprobar',contCreditos.getCreditosSinAprobar);
-ruta.put('/aprobar_rechazar/:id',contCreditos.aprobarRechazarCredito);
+ruta.get('/get/finales',contCreditos.getFinales);
+ruta.put('/preaprobar_rechazar/:id',contCreditos.preaprobarRechazarCredito);
+ruta.put('/aprobar_rechazar/:id',contCreditos.AprobarRechazarCredito);
 ruta.post('/add',contCreditos.nuevoCredito);
+ruta.put('/editarTipo',contCreditos.editarTipo);
 module.exports = ruta;
