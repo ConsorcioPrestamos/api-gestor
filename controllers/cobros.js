@@ -81,20 +81,18 @@ function getCobrosAtrasados(req,res){
                     }
                 }else res.status(500).send({message:`Error al consultar en la bd: ${err}`});
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 };
 
-
-function cobrosXRealizarDia(req,res){
-
+function cobrosDetalles(req,res){
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql = `
                 SELECT  
                 cobros.idcobro,
-                cobros.idprestamo,
+                cobros.idcredito,
                 cobros.idcliente AS idcliente_cobro,
                 cobros.idempleado,
                 cobros.fecha_cobro,
@@ -117,10 +115,55 @@ function cobrosXRealizarDia(req,res){
                 FROM
                 cobros 
                 INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
-                INNER JOIN prestamos on cobros.idprestamo = prestamos.idprestamo
-                INNER JOIN negocios on prestamos.idprestamo = cobros.idprestamo AND prestamos.idnegocio = negocios.idnegocio
-                INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND prestamos.idprestamo = cobros.idprestamo AND prestamos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
-                INNER JOIN zonas on zonas.idzona = negocios.idzona AND prestamos.idprestamo = cobros.idprestamo AND prestamos.idnegocio = negocios.idnegocio
+                INNER JOIN creditos on cobros.idcredito = creditos.idcredito
+                INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
+                INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
+                INNER JOIN zonas on zonas.idzona = negocios.idzona AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
+            `;
+            connection.query(sql,(err,result)=>{
+                if(!err){
+                    res.status(200).send({result});
+                }else return res.status(500).send({message:`Error al consultar en la base de datos: ${err}, sql= ${sql}`});
+            });
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        connection.release();
+    })
+}
+
+function cobrosXRealizarDia(req,res){
+
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql = `
+                SELECT  
+                cobros.idcobro,
+                cobros.idcredito,
+                cobros.idcliente AS idcliente_cobro,
+                cobros.idempleado,
+                cobros.fecha_cobro,
+                cobros.cantidad_cobro,
+                cobros.comentario_cobro,
+                cobros.status,
+                negocios.nombre_negocio,
+                negocios.tipo as tipo_negocio,
+                negocios.giro as giro_negocio,
+                clientes.nombres as nombre_cliente,
+                clientes.app_pat as app_pat_cliente,
+                clientes.app_mat as app_mat_cliente,
+                clientes.telefonos,
+                zonas.idzona,
+                zonas.nombre_zona,
+                zonas.idempleado,
+                investigaciones.calle_negocio,
+                investigaciones.num_int_negocio,
+                investigaciones.num_ext_negocio
+                FROM
+                cobros 
+                INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
+                INNER JOIN creditos on cobros.idcredito = creditos.idcredito
+                INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
+                INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
+                INNER JOIN zonas on zonas.idzona = negocios.idzona AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
             `;
             var data = [];
             var hoy = moment().format('YYYY-MM-DD');
@@ -178,12 +221,12 @@ function pagoRequerido(req,res){
 
 }
 function pagoCompleto(req,res){
-    // var idprestamo= req.body.cobro.idprestamo;
-    var idprestamo= req.body.idprestamo;
+    // var idcredito= req.body.cobro.idcredito;
+    var idcredito= req.body.idcredito;
     var comentario = req.body.comentario_cobro
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql =`UPDATE cobros SET status='Pagado', comentario_cobro='${comentario}' WHERE idprestamo=${idprestamo} AND status='Pendiente'`
+            var sql =`UPDATE cobros SET status='Pagado', comentario_cobro='${comentario}' WHERE idcredito=${idcredito} AND status='Pendiente'`
             connection.query(sql,(err,result)=>{
                 if(err) res.status(500).send({message:`ERROR ${err} --- sql${sql}`});
                 if(!result) res.status(404).send({message:`ERROR !result`});
@@ -208,7 +251,7 @@ function pagoExacto(req,res){
     var connection = dbConnection()
     connection.connect((err)=>{
         if(!err){
-            sql=`SELECT * FROM cobros WHERE idprestamo=${info_cobro.prestamo_idprestamo} AND status = 'Pendiente'`;
+            sql=`SELECT * FROM cobros WHERE idcredito=${info_cobro.prestamo_idcredito} AND status = 'Pendiente'`;
             connection.query(sql,(err,cobros)=>{
                 if(!err){
                     if(cantidad_a_pagar >= parseFloat(cobros[0].cantidad_cobro)  && cantidad_a_pagar > 0 ){ 
@@ -272,5 +315,6 @@ module.exports={
     cobrosXRealizarDia,
     pagoRequerido,
     pagoCompleto,
-    pagoExacto
+    pagoExacto,
+    cobrosDetalles
 }

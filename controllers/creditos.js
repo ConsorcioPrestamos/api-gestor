@@ -71,6 +71,7 @@ function getFinales(req,res){
             creditos.idnegocio,
             idsucursal,
             fecha_solicitud,
+            monto_aprobado,
             monto_solicitado,
             monto_interes,
             monto_conInteres,
@@ -97,9 +98,9 @@ function getFinales(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+                }else return res.status(500).send({message:`Error al consultar en la BD: ${err}`});
             });        
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     });
 }
@@ -223,82 +224,7 @@ function preaprobarRechazarCredito(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     if(status=='A'){
-                        // se obtienen los datos del prestamo: 
-                        sql=`SELECT * FROM creditos WHERE idcredito=${idcredito}`;
-                        connection.query(sql,(err,result)=>{
-                            console.log(result);
-                            if(err)  res.status(500).send({message:`Error en la consulta ${err}`});
-                            if(result.length < 1)  res.status(404).send({message:`No se encontraron clientes`});
-                            if(!err && result.length > 0){
-                                var idcredito = result[0].tipo_credito;
-                                var tiempo = result[0].tiempo;
-                                var idcliente = result[0].idcliente;
-                                var idnegocio = result[0].idnegocio;
-                                var empleado_captura = result[0].idempleado;
-                                var interes=result[0].interes;
-                                var monto_interes=result[0].monto_aprobado*(interes/100);
-                                var monto_conInteres=parseFloat(result[0].monto_aprobado)+parseInt(monto_interes);
-                                var cobro_unitario = monto_conInteres / parseInt(tiempo);
-                                console.log('cobro unitario : ',cobro_unitario);
-                                // obtenemos datos del tipo de credito:
-                                sql = `SELECT * FROM tipos_creditos WHERE idtipo=${idcredito}`;
-                                connection.query(sql,(err,result)=>{
-                                    if(err)  res.status(500).send({message:`Error en la consulta ${err}`});
-                                    if(result.length < 1)  res.status(404).send({message:`No se encontraron creditos`});
-                                    if(!err && result.length > 0){
-                                        console.log(result);
-                                        var credito_tipo_credito = result[0].tipo;
-                                        var sql =`SELECT * FROM negocios WHERE idnegocio=${idnegocio}`;
-                                        connection.query(sql,(err,result)=>{
-                                            if(!err){
-                                                console.log(result);
-                                                sql=`SELECT * FROM zonas WHERE idzona=${result[0].idzona}`;
-                                                connection.query(sql,(err,result)=>{
-                                                    if(!err){
-                                                        var cobrador = result[0].idempleado;
-                                                        var addMoment = '';
-                                                        switch(credito_tipo_credito) {
-                                                        case 'DIARIOS':
-                                                            addMoment = 'days';
-                                                            break;
-                                                        case 'SEMANALES':
-                                                            addMoment = 'weeks';
-                                                            break;
-                                                        case 'MENSUALES':
-                                                            addMoment = 'months'
-                                                            break;
-                                                        }
-                                                        var values = [];
-                                                        var fecha_moment  = moment().add(1,`${addMoment}`);
-                                                        for(var i=1; i <= tiempo ; i++ ){
-                                                            values.push(['null',idcredito,idcliente,cobrador,fecha_moment.format('YYYY-MM-DD'),cobro_unitario,'null','null','Pendiente']);
-                                                            fecha_moment  = moment().add(i+1,`${addMoment}`);
-                                                        }
-                                                        var cobros_sql = `INSERT INTO cobros (idcobro,idcredito,idcliente,idempleado,fecha_cobro,cantidad_cobro,comentario_cobro,imagen_cobro,status) VALUES ?`;
-                                                        
-                                                        connection.query(cobros_sql,[values],(err,result)=>{
-                                                            if (err) console.log(`Error en la coneccion 3 ${err} --->sql = ${cobros_sql}`);
-                                                            if(!err){
-                                                                console.log("Number of records inserted: " + result.affectedRows);
-                                                                console.log(`Los cobros se insertaran de la siguiente manera: ${cobros_sql}`);
-                                                                sql =`UPDATE creditos SET fecha_aprobacion='${moment().format('YYYY-MM-DD')}', monto_interes='${monto_interes}', monto_conInteres='${monto_conInteres}' WHERE idcredito=${idcredito}`;
-                                                                connection.query(sql,(err,result)=>{
-                                                                    if(!err){
-                                                                        console.log('si salio papu');
-                                                                        res.status(200).send({result});
-                                                                    }else res.status(500).send({message:`Error al actualizar papu ${err}`});
-                                                                    
-                                                                });
-                                                            }  
-                                                        });
-                                                    }else res.status(500).send({message:`Error al actualizar papu ${err}`});
-                                                });
-                                            }else res.status(500).send({message:`Error al actualizar papu ${err}`});
-                                        });
-                                    }
-                                }); 
-                            }
-                        });
+                        res.status(200).send({result:`Prestamo preaprobado con exito`});
                     }else{
                         res.status(200).send({result:`Prestamo rechazado con exito`});
                     }
