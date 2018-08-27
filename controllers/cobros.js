@@ -167,14 +167,12 @@ function cobrosXRealizarDia(req,res){
             `;
             var data = [];
             var hoy = moment().format('YYYY-MM-DD');
-            var pagoCompelto=0;
             connection.query(sql,(err,result)=>{
-                if(err)  res.status(500).send({message:`Error en la consulta ${err}`});
-                if(!result)  res.status(404).send({message:`No se encontraron cobros`});
-                if(!err && result){
+                if(err)  return res.status(500).send({message:`Error en la consulta ${err}`});
+                if(!err){
                     for(let i=0; i< result.length; i++){
                         var momentObj = moment(result[i]).format('YYYY-MM-DD');
-                        console.log('asdasasd'+momentObj);
+                        // console.log('asdasasd'+momentObj);
                         var status =result[i].status;
                         if(status=='Pendiente'){
                             if(status=='Pendiente' && result[i].fecha_cobro==hoy || moment(momentObj).isBefore(hoy) ){
@@ -182,19 +180,15 @@ function cobrosXRealizarDia(req,res){
                                 console.log('--------->status', result[i].status);
                                 data.push(result[i]);
                             }
-                        }
-                        if(status=='Pendiente'){
-                            pagoCompelto += result[i].cobro_cantidad_cobro;
-                        }
-                        
+                        }                     
                     }
                     console.log(`Data--->`);
                     console.log(data);
-                    console.log(`Pago completo ${pagoCompelto}`);
-                    res.status(200).send({'result':data,'completo':pagoCompelto});
+                    
+                    res.status(200).send({'result':data});
                 }
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return  res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
     
@@ -228,14 +222,13 @@ function pagoCompleto(req,res){
         if(!err){
             var sql =`UPDATE cobros SET status='Pagado', comentario_cobro='${comentario}' WHERE idcredito=${idcredito} AND status='Pendiente'`
             connection.query(sql,(err,result)=>{
-                if(err) res.status(500).send({message:`ERROR ${err} --- sql${sql}`});
-                if(!result) res.status(404).send({message:`ERROR !result`});
+                if(err)return  res.status(500).send({message:`ERROR ${err} --- sql${sql}`});
                 if(!err && result){
                     console.log(result);
                     res.status(200).send({result:`cobros modificada con exito`});
                 }
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }
