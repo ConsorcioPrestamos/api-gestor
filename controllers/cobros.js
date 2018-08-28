@@ -3,7 +3,7 @@ const moment = require('moment');
 const config = require('../config');
 var pool = config.pool;
 
-
+var dbConnection = config.connection;
 
 
 function getCobros(req,res){
@@ -197,19 +197,18 @@ function cobrosXRealizarDia(req,res){
 function pagoRequerido(req,res){
     // var idcobro= req.body.cobro.idcobro;
     var idcobro = req.body.idcobro
-    var comentario = req.body.comentario_cobro
+    var comentario = req.body.comentario
     console.log(idcobro+'   '+comentario);
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql=`Update cobros SET status='Pagado', comentario_cobro='${comentario}' WHERE idcobro=${idcobro}`
             connection.query(sql,(err,result)=>{
-                if(err) res.status(500).send({message:`ERROR ${err}`});
-                if(!result) res.status(404).send({message:`ERROR !result`});
+                if(err) return res.status(500).send({message:`ERROR ${err}`});
                 if(!err && result){
                     res.status(200).send({result:`cobro modificada con exito`});
                 }
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 
@@ -217,13 +216,13 @@ function pagoRequerido(req,res){
 function pagoCompleto(req,res){
     // var idcredito= req.body.cobro.idcredito;
     var idcredito= req.body.idcredito;
-    var comentario = req.body.comentario_cobro
+    var comentario = req.body.comentario
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql =`UPDATE cobros SET status='Pagado', comentario_cobro='${comentario}' WHERE idcredito=${idcredito} AND status='Pendiente'`
             connection.query(sql,(err,result)=>{
                 if(err)return  res.status(500).send({message:`ERROR ${err} --- sql${sql}`});
-                if(!err && result){
+                if(!err){
                     console.log(result);
                     res.status(200).send({result:`cobros modificada con exito`});
                 }
@@ -244,7 +243,7 @@ function pagoExacto(req,res){
     var connection = dbConnection()
     connection.connect((err)=>{
         if(!err){
-            sql=`SELECT * FROM cobros WHERE idcredito=${info_cobro.prestamo_idcredito} AND status = 'Pendiente'`;
+            sql=`SELECT * FROM cobros WHERE idcredito=${info_cobro.idcredito} AND status = 'Pendiente'`;
             connection.query(sql,(err,cobros)=>{
                 if(!err){
                     if(cantidad_a_pagar >= parseFloat(cobros[0].cantidad_cobro)  && cantidad_a_pagar > 0 ){ 
