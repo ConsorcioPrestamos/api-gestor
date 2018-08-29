@@ -11,9 +11,9 @@ function addTipoCredito(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message: `Error al insertar en la BD: ${err}`})
+                }else return res.status(500).send({message: `Error al insertar en la BD: ${err}`})
             })
-        }else res.status(500).send({message:`Error al conectar con la base de datos: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la base de datos: ${err}`});
         connection.release();
     })
 }
@@ -28,9 +28,9 @@ function updateTipoCredito(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){ 
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al actualizar datos: ${err}`});
+                }else return res.status(500).send({message:`Error al actualizar datos: ${err}`});
             });
-        }else res.status(500).send({message:`Error al conectar con la base de datos: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la base de datos: ${err}`});
         connection.release();
     })
 
@@ -43,9 +43,9 @@ function getTiposCreditos(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al cosultar en la BD: ${err}`});
+                }else return res.status(500).send({message:`Error al cosultar en la BD: ${err}`});
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }
@@ -58,9 +58,9 @@ function getTipoCredito(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+                }else return res.status(500).send({message:`Error al consultar en la BD: ${err}`});
             });        
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }
@@ -84,9 +84,9 @@ function getDetalles(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al consultar en la BD: ${err}`});
+                }else return res.status(500).send({message:`Error al consultar en la BD: ${err}`});
             });        
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }

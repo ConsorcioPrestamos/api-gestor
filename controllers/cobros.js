@@ -13,9 +13,9 @@ function getCobros(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al consultar en la bd: ${err}`});
+                }else return res.status(500).send({message:`Error al consultar en la bd: ${err}`});
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }
@@ -29,9 +29,9 @@ function getCobrosPorCliente(req,res){
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
-                }else res.status(500).send({message:`Error al consultar en la bd: ${err}`});
+                }else return res.status(500).send({message:`Error al consultar en la bd: ${err}`});
             });
-        }else res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();
     })
 }
