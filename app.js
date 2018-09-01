@@ -27,7 +27,6 @@ var empleadosRoutes = require('./routes/empleados');
 var usuariosRoutes = require('./routes/usuarios');
 var sucursalesRoutes = require('./routes/sucursales');
 var redesSocialesRoutes = require('./routes/redesSociales');
-var zonasRoutes = require('./routes/zonas');
 var tiposCreditoRoutes = require('./routes/tiposCredito');
 var clientesRoutes = require('./routes/clientes');
 var negociosRoutes = require('./routes/negocios');
@@ -35,14 +34,14 @@ var investigacionesRoutes = require('./routes/investigaciones');
 var creditosRoutes = require('./routes/creditos');
 var cobrosRoutes = require('./routes/cobros');
 var imagenesRoutes = require('./routes/imagenes');
+var asignacionLocalidades = require('./routes/asignacionLocalidad');
 
 //Middlewares de rutas:
 app.use('/empresas',empresasRoutes);
-app.use('/empleados/',empleadosRoutes);
-app.use('/usuarios/',usuariosRoutes);
+app.use('/empleados',empleadosRoutes);
+app.use('/usuarios',usuariosRoutes);
 app.use('/sucursales', sucursalesRoutes);
 app.use('/redes', redesSocialesRoutes);
-app.use('/zonas', zonasRoutes);
 app.use('/tiposCreditos', tiposCreditoRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/negocios', negociosRoutes);
@@ -50,6 +49,7 @@ app.use('/investigaciones', investigacionesRoutes);
 app.use('/creditos', creditosRoutes);
 app.use('/cobros', cobrosRoutes);
 app.use('/imagenes', imagenesRoutes);
+app.use('/asignaciones',asignacionLocalidades);
 
 
 //pagina sin ruta//

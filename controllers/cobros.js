@@ -106,9 +106,6 @@ function cobrosDetalles(req,res){
                 clientes.app_pat as app_pat_cliente,
                 clientes.app_mat as app_mat_cliente,
                 clientes.telefonos,
-                zonas.idzona,
-                zonas.nombre_zona,
-                zonas.idempleado,
                 investigaciones.calle_negocio,
                 investigaciones.num_int_negocio,
                 investigaciones.num_ext_negocio
@@ -118,7 +115,6 @@ function cobrosDetalles(req,res){
                 INNER JOIN creditos on cobros.idcredito = creditos.idcredito
                 INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
                 INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
-                INNER JOIN zonas on zonas.idzona = negocios.idzona AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
             `;
             connection.query(sql,(err,result)=>{
                 if(!err){
@@ -151,9 +147,6 @@ function cobrosXRealizarDia(req,res){
                 clientes.app_pat as app_pat_cliente,
                 clientes.app_mat as app_mat_cliente,
                 clientes.telefonos,
-                zonas.idzona,
-                zonas.nombre_zona,
-                zonas.idempleado,
                 investigaciones.calle_negocio,
                 investigaciones.num_int_negocio,
                 investigaciones.num_ext_negocio
@@ -163,7 +156,6 @@ function cobrosXRealizarDia(req,res){
                 INNER JOIN creditos on cobros.idcredito = creditos.idcredito
                 INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
                 INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
-                INNER JOIN zonas on zonas.idzona = negocios.idzona AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
             `;
             var data = [];
             var hoy = moment().format('YYYY-MM-DD');
@@ -297,6 +289,73 @@ function pagoExacto(req,res){
     
 }
 
+function posponerPago(req,res){
+    var cobro = req.body.cobro;
+    var tipoCredito = req.body.tipoCredito; 
+    var comentario = req.body.comentario;
+    var idcobro = cobro.idcobro; 
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql = `UPDATE cobros SET status='ATRASADO', comentario_cobro='${comentario}' WHERE idcobro=${idcobro}`;
+            console.log(sql);
+            
+            connection.query(sql,(err,result)=>{
+                if(!err){
+                    console.log('cobro actualizado');
+                    sql = `SELECT * FROM tipos_creditos WHERE idtipo = ${tipoCredito.idtipo}`;
+                    connection.query(sql,(err,result)=>{
+                        if(!err){
+                            var addMoment='days';
+                            switch(result[0].tipo) {
+                                case 'DIARIOS':
+                                    addMoment = 'days';
+                                    break;
+                                case 'SEMANALES':
+                                    addMoment = 'weeks';
+                                    break;
+                                case 'MENSUALES':
+                                    addMoment = 'months'
+                                    break;
+                                }
+                            sql = `select fecha_cobro  from cobros WHERE idcredito = ${cobro.idcredito} ORDER BY cobros.fecha_cobro DESC`;
+                            connection.query(sql,(err,result)=>{
+                                if(!err){
+                                    
+                                    var fecha_moment  = moment([result[0].fecha_cobro]).add(1,`${addMoment}`);
+                                    console.log('nuevo fecha del cobro: ', fecha_moment);
+                                    cobro.fecha_cobro = fecha_moment.format('YYYY-MM-DD');
+                                    sql = `INSERT INTO cobros VALUES(null, ${cobro.idcredito}, ${cobro.idcliente}, ${cobro.idempleado}, '${cobro.fecha_cobro}', ${cobro.cantidad_cobro}, null, null, 'Pendiente')`;
+                                    connection.query(sql,(err,result)=>{
+                                        if(!err){
+                                            console.log(result);
+                                            res.status(200).send({result});
+                                        }else return res.status(500).send({message:`Error al insertar en la base de datos: ${err}, sql ${sql}`})
+                                    });
+                                }else return res.status(500).send({message:`Error al consultar en la base de datos: ${err}, sql: ${sql}`})
+                            });
+                        }else return res.status(500).send({message:`Error en la consulta a la bd: ${err}`});
+                    });
+                }else return res.status(500).send({message:`Error con update: ${err}`});
+            })
+        }else return res.status(500).send({message:`Error al conectar con la base de datos: ${err}`});
+        connection.release();
+    });
+}
+
+function modificarFecha(req,res){
+    var cobro= req.body;
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql= `UPDATE cobros SET fecha_cobro = '${cobro.fecha_cobro}' WHERE idcobro=${cobro.idcobro}`;
+            connection.query(sql, (err,result)=>{
+                if(!err){
+                    console.log(result);
+                    res.status(200).send({result});
+                }else res.status(500).send({message:`Error con update:${err}, sql = ${sql}`});
+            });
+        }else return res.status(500).send({message:`Error al conectar con la base de datos: ${err} `})
+    });
+}
 
 module.exports={
     getCobros,
@@ -308,5 +367,7 @@ module.exports={
     pagoRequerido,
     pagoCompleto,
     pagoExacto,
-    cobrosDetalles
+    cobrosDetalles,
+    posponerPago,
+    modificarFecha
 }

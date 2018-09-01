@@ -18,8 +18,7 @@ function addCliente(req,res){
     	!data.nombre_negocio || 
     	!data.giro || 
     	!data.tipo || 
-    	!data.comentarios || 
-    	!data.idzona ||
+    	!data.comentarios ||
     	!data.propietario || //si, no
     	!data.antiguedad || 
     	!data.arrendamiento //si, no
@@ -44,7 +43,6 @@ function addCliente(req,res){
                     sql = ` INSERT INTO negocios VALUES (
                     	null, 
                     	${idcliente}, 
-                    	${data.idzona}, 
                     	'${data.nombre_negocio.toUpperCase()}', 
                     	'${data.giro.toUpperCase()}', 
                         '${data.tipo.toUpperCase()}', 

@@ -276,47 +276,44 @@ function AprobarRechazarCredito(req,res){
                                         connection.query(sql,(err,result)=>{
                                             if(!err){
                                                 console.log(result);
-                                                sql=`SELECT * FROM zonas WHERE idzona=${result[0].idzona}`;
-                                                connection.query(sql,(err,result)=>{
+                                                
+                                                var cobrador = result[0].idempleado;
+                                                var addMoment = '';
+                                                switch(credito_tipo_credito) {
+                                                case 'DIARIOS':
+                                                    addMoment = 'days';
+                                                    break;
+                                                case 'SEMANALES':
+                                                    addMoment = 'weeks';
+                                                    break;
+                                                case 'MENSUALES':
+                                                    addMoment = 'months'
+                                                    break;
+                                                }
+                                                var values = [];
+                                                var fecha_moment  = moment().add(1,`${addMoment}`);
+                                                for(var i=1; i <= tiempo ; i++ ){
+                                                    values.push(['null',idcredito,idcliente,cobrador,fecha_moment.format('YYYY-MM-DD'),cobro_unitario,'null','null','Pendiente']);
+                                                    fecha_moment  = moment().add(i+1,`${addMoment}`);
+                                                }
+                                                var cobros_sql = `INSERT INTO cobros (idcobro,idcredito,idcliente,idempleado,fecha_cobro,cantidad_cobro,comentario_cobro,imagen_cobro,status) VALUES ?`;
+                                                
+                                                connection.query(cobros_sql,[values],(err,result)=>{
+                                                    if (err) console.log(`Error en la coneccion 3 ${err} --->sql = ${cobros_sql}`);
                                                     if(!err){
-                                                        var cobrador = result[0].idempleado;
-                                                        var addMoment = '';
-                                                        switch(credito_tipo_credito) {
-                                                        case 'DIARIOS':
-                                                            addMoment = 'days';
-                                                            break;
-                                                        case 'SEMANALES':
-                                                            addMoment = 'weeks';
-                                                            break;
-                                                        case 'MENSUALES':
-                                                            addMoment = 'months'
-                                                            break;
-                                                        }
-                                                        var values = [];
-                                                        var fecha_moment  = moment().add(1,`${addMoment}`);
-                                                        for(var i=1; i <= tiempo ; i++ ){
-                                                            values.push(['null',idcredito,idcliente,cobrador,fecha_moment.format('YYYY-MM-DD'),cobro_unitario,'null','null','Pendiente']);
-                                                            fecha_moment  = moment().add(i+1,`${addMoment}`);
-                                                        }
-                                                        var cobros_sql = `INSERT INTO cobros (idcobro,idcredito,idcliente,idempleado,fecha_cobro,cantidad_cobro,comentario_cobro,imagen_cobro,status) VALUES ?`;
-                                                        
-                                                        connection.query(cobros_sql,[values],(err,result)=>{
-                                                            if (err) console.log(`Error en la coneccion 3 ${err} --->sql = ${cobros_sql}`);
+                                                        console.log("Number of records inserted: " + result.affectedRows);
+                                                        console.log(`Los cobros se insertaran de la siguiente manera: ${cobros_sql}`);
+                                                        sql =`UPDATE creditos SET fecha_aprobacion='${moment().format('YYYY-MM-DD')}', monto_interes='${monto_interes}', monto_conInteres='${monto_conInteres}' WHERE idcredito=${idcredito}`;
+                                                        connection.query(sql,(err,result)=>{
                                                             if(!err){
-                                                                console.log("Number of records inserted: " + result.affectedRows);
-                                                                console.log(`Los cobros se insertaran de la siguiente manera: ${cobros_sql}`);
-                                                                sql =`UPDATE creditos SET fecha_aprobacion='${moment().format('YYYY-MM-DD')}', monto_interes='${monto_interes}', monto_conInteres='${monto_conInteres}' WHERE idcredito=${idcredito}`;
-                                                                connection.query(sql,(err,result)=>{
-                                                                    if(!err){
-                                                                        console.log('si salio papu');
-                                                                        res.status(200).send({result});
-                                                                    }else res.status(500).send({message:`Error al actualizar papu ${err}`});
-                                                                    
-                                                                });
-                                                            }  
+                                                                console.log('si salio papu');
+                                                                res.status(200).send({result});
+                                                            }else res.status(500).send({message:`Error al actualizar papu ${err}`});
+                                                            
                                                         });
-                                                    }else res.status(500).send({message:`Error al actualizar papu ${err}`});
+                                                    }  
                                                 });
+                                              
                                             }else res.status(500).send({message:`Error al actualizar papu ${err}`});
                                         });
                                     }

@@ -11,7 +11,8 @@ ruta.get('/getDetalles', contCobros.cobrosDetalles);
 ruta.put('/pago_requerido',contCobros.pagoRequerido);
 ruta.put('/pago_completo',contCobros.pagoCompleto);
 ruta.put('/pago_exacto',contCobros.pagoExacto);
-
+ruta.put('/posponer',contCobros.posponerPago);
+ruta.put('/updateFecha', contCobros.modificarFecha);
 
 
 
