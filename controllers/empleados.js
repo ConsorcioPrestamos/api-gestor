@@ -109,11 +109,26 @@ function getEmpleadosDetalles(req,res){
     });
 }
 
+function getCobradores(req,res){
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql=`SELECT * FROM empleados WHERE puesto='COBRADOR'`;
+            connection.query(sql,(err,result)=>{
+                if(!err){
+                    res.status(200).send({result});
+                }else res.status(500).send({message:`Error en la consulta en la bd: ${err}`});
+            });
+        }else res.status(500).send({message:`Error en la conexion a la bd: ${err}`});
+        connection.release();
+    });
+}
+
 
 module.exports = {
     getEmpleados,
     getEmpleado,
     addEmpleado,
     updateEmpleado,
-    getEmpleadosDetalles
+    getEmpleadosDetalles,
+    getCobradores
 }

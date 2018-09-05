@@ -8,5 +8,6 @@ route.get('/get/:id',empleadosCtrl.getEmpleado);
 route.post('/add',empleadosCtrl.addEmpleado);
 route.put('/update/:id',empleadosCtrl.updateEmpleado);
 route.get('/getDetalles',empleadosCtrl.getEmpleadosDetalles);
+route.get('/getCobradores', empleadosCtrl.getCobradores);
 
 module.exports = route;
