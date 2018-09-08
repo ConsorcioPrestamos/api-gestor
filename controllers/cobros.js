@@ -149,7 +149,8 @@ function cobrosXRealizarDia(req,res){
                 clientes.telefonos,
                 investigaciones.calle_negocio,
                 investigaciones.num_int_negocio,
-                investigaciones.num_ext_negocio
+                investigaciones.num_ext_negocio,
+                investigaciones.poblacion_negocio
                 FROM
                 cobros 
                 INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
@@ -157,6 +158,68 @@ function cobrosXRealizarDia(req,res){
                 INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
                 INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
             `;
+            var data = [];
+            var hoy = moment().format('YYYY-MM-DD');
+            connection.query(sql,(err,result)=>{
+                if(err)  return res.status(500).send({message:`Error en la consulta ${err}`});
+                if(!err){
+                    for(let i=0; i< result.length; i++){
+                        var momentObj = moment(result[i]).format('YYYY-MM-DD');
+                        // console.log('asdasasd'+momentObj);
+                        var status =result[i].status;
+                        if(status=='Pendiente'){
+                            if(status=='Pendiente' && result[i].fecha_cobro==hoy || moment(momentObj).isBefore(hoy) ){
+                                // console.log(moment(momentString)+'='+hoy)
+                                console.log('--------->status', result[i].status);
+                                data.push(result[i]);
+                            }
+                        }                     
+                    }
+                    console.log(`Data--->`);
+                    console.log(data);
+                    
+                    res.status(200).send({'result':data});
+                }
+            });
+        }else return  res.status(500).send({message:`Error al conectar con la bd: ${err}`});
+        connection.release();
+    })
+    
+}
+
+
+function cobrosXRealizarDiaCobrador(req,res){
+    var idempleado = req.params.id;
+    pool.getConnection((err,connection)=>{
+        if(!err){
+            var sql = `
+            SELECT  
+            cobros.idcobro,
+            cobros.idcredito,
+            cobros.idcliente AS idcliente_cobro,
+            cobros.idempleado,
+            cobros.fecha_cobro,
+            cobros.cantidad_cobro,
+            cobros.comentario_cobro,
+            cobros.status,
+            negocios.nombre_negocio,
+            negocios.tipo as tipo_negocio,
+            negocios.giro as giro_negocio,
+            clientes.nombres as nombre_cliente,
+            clientes.app_pat as app_pat_cliente,
+            clientes.app_mat as app_mat_cliente,
+            clientes.telefonos,
+            investigaciones.calle_negocio,
+            investigaciones.num_int_negocio,
+            investigaciones.num_ext_negocio,
+            investigaciones.poblacion_negocio
+            FROM
+            cobros 
+            INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
+            INNER JOIN creditos on cobros.idcredito = creditos.idcredito
+            INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
+            INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
+            INNER JOIN asignaciones_localidades ON asignaciones_localidades.idempleado = ${idempleado} AND asignaciones_localidades.localidad = investigaciones.poblacion_negocio `;
             var data = [];
             var hoy = moment().format('YYYY-MM-DD');
             connection.query(sql,(err,result)=>{
@@ -369,5 +432,6 @@ module.exports={
     pagoExacto,
     cobrosDetalles,
     posponerPago,
-    modificarFecha
+    modificarFecha,
+    cobrosXRealizarDiaCobrador
 }

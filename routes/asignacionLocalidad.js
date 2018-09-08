@@ -7,6 +7,6 @@ route.get('/get/', asignacionCtrl.getAsignaciones);
 route.get('/getLocalidades/', asignacionCtrl.getLocalidades);
 route.post('/asignar', asignacionCtrl.asignarLocalidades);
 route.get('/getDetalles/', asignacionCtrl.getAsignacionesDetalles);
-
+route.get('/getXCobrador/:id', asignacionCtrl.getLocalidadesXCobrador);
 
 module.exports = route;

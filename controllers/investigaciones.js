@@ -29,7 +29,6 @@ function updateInvestigacion(req,res){
         || !data.poblacion 
         || !data.tel 
         || !data.casa_propia 
-        || !data.num_dependientes 
         || !data.monto_credito 
         || !data.tipo_comprobante 
         || !data.calle_negocio 

@@ -96,9 +96,25 @@ function getAsignacionesDetalles(req,res){
     })
 }
 
+function getLocalidadesXCobrador(req,res){
+    var idempleado  = req.params.id;
+    pool.getConnection((err, connection)=>{
+        if(!err){
+            var sql =`select * FROM asignaciones_localidades where idempleado = ${idempleado} `;
+            connection.query(sql,(err, result)=>{
+                if(!err){
+                    res.status(200).send({result});
+                }else return res.status(500).send({message:`Error al realizar la consulta ${sql}, --> ${err}`})
+            });
+        }else return res.status(500).send({message:`Error al conectar en la bd ${err}`});
+        connection.release();
+    })
+}
+
 module.exports={
     getAsignaciones,
     asignarLocalidades,
     getLocalidades,
-    getAsignacionesDetalles
+    getAsignacionesDetalles,
+    getLocalidadesXCobrador
 }

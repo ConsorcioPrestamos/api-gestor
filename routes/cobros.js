@@ -13,7 +13,7 @@ ruta.put('/pago_completo',contCobros.pagoCompleto);
 ruta.put('/pago_exacto',contCobros.pagoExacto);
 ruta.put('/posponer',contCobros.posponerPago);
 ruta.put('/updateFecha', contCobros.modificarFecha);
-
+ruta.get('/getCobroDiaCobrador/:id', contCobros.cobrosXRealizarDiaCobrador)
 
 
 module.exports = ruta;
