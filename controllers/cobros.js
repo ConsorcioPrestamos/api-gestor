@@ -90,32 +90,37 @@ function cobrosDetalles(req,res){
     pool.getConnection((err,connection)=>{
         if(!err){
             var sql = `
-                SELECT  
-                cobros.idcobro,
-                cobros.idcredito,
-                cobros.idcliente AS idcliente_cobro,
-                cobros.idempleado,
-                cobros.fecha_cobro,
-                cobros.cantidad_cobro,
-                cobros.comentario_cobro,
-                cobros.status,
-                negocios.nombre_negocio,
-                negocios.tipo as tipo_negocio,
-                negocios.giro as giro_negocio,
-                clientes.nombres as nombre_cliente,
-                clientes.app_pat as app_pat_cliente,
-                clientes.app_mat as app_mat_cliente,
-                clientes.telefonos,
-                investigaciones.calle_negocio,
-                investigaciones.num_int_negocio,
-                investigaciones.num_ext_negocio
-                FROM
-                cobros 
-                INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
-                INNER JOIN creditos on cobros.idcredito = creditos.idcredito
-                INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
-                INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
-            `;
+            SELECT  
+            cobros.idcobro,
+            cobros.idcredito,
+            cobros.idcliente AS idcliente_cobro,
+            cobros.idempleado,
+            cobros.fecha_cobro,
+            cobros.cantidad_cobro,
+            cobros.comentario_cobro,
+            cobros.status,
+            negocios.nombre_negocio,
+            negocios.tipo as tipo_negocio,
+            negocios.giro as giro_negocio,
+            clientes.nombres as nombre_cliente,
+            clientes.app_pat as app_pat_cliente,
+            clientes.app_mat as app_mat_cliente,
+            clientes.telefonos,
+            investigaciones.calle_negocio,
+            investigaciones.num_int_negocio,
+            investigaciones.num_ext_negocio,
+            creditos.fecha_solicitud,
+            creditos.fecha_aprobacion,
+            creditos.tiempo,
+            tipos_creditos.tiempo as tipo_credito
+            FROM
+            cobros 
+            INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
+            INNER JOIN creditos on cobros.idcredito = creditos.idcredito
+            INNER JOIN negocios on creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio
+            INNER JOIN investigaciones on cobros.idcliente = investigaciones.idcliente AND creditos.idcredito = cobros.idcredito AND creditos.idnegocio = negocios.idnegocio and investigaciones.idnegocio = negocios.idnegocio
+            INNER JOIN tipos_creditos on creditos.idcredito = cobros.idcredito AND creditos.tipo_credito = tipos_creditos.idtipo
+        `;
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
