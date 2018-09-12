@@ -112,7 +112,7 @@ function cobrosDetalles(req,res){
             creditos.fecha_solicitud,
             creditos.fecha_aprobacion,
             creditos.tiempo,
-            tipos_creditos.tiempo as tipo_credito
+            tipos_creditos.tipo as tipo_credito
             FROM
             cobros 
             INNER JOIN clientes on cobros.idcliente = clientes.idcliente 
