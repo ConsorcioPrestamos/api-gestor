@@ -35,6 +35,7 @@ function uploadImage(req, res) {
 	} else res.status(500).send({ message: 'Error, no se envio ningun archivo' });
 }
 
+
 function getImagenes(req, res) {
 	pool.getConnection((err, connection) => {
 		if (!err) {

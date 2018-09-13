@@ -4,10 +4,11 @@ var pool = config.pool;
 
 function addTipoCredito(req,res){
     var data = req.body;
-    if(!data.idempresa || !data.descripcion || !data.tipo || !data.tiempo || !data.interes || !data.status) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
+    console.log(data);
+    if(data.idempresa == null || !data.descripcion || !data.tipo || !data.tiempo || !data.interes) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `INSERT INTO tipos_creditos VALUES(null, '${data.idempresa}', '${data.descripcion.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.tiempo}', '${data.interes}', '${data.status.toUpperCase()}')`;
+            var sql = `INSERT INTO tipos_creditos VALUES(null, '${data.idempresa}', '${data.descripcion.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.tiempo}', '${data.interes}', 'ACTIVO')`;
             connection.query(sql,(err,result)=>{
                 if(!err){
                     res.status(200).send({result});
@@ -20,11 +21,12 @@ function addTipoCredito(req,res){
 
 function updateTipoCredito(req,res){
     var data = req.body;
+    console.log(data);
     var idtipo = req.params.id;
-    if(!data.idempresa || !data.descripcion || !data.tipo || !data.tiempo || !data.interes || !data.status) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
+    if(!data.idempresa || !data.descripcion || !data.tipo || !data.tiempo || !data.interes) return res.status(500).send({message:`ERROR, no se enviaron todos los datos`});
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = `UPDATE tipos_creditos SET idtipo='${data.idtipo}', idempresa='${data.idempresa}', descripcion='${data.descripcion.toUpperCase()}', tipo='${data.tipo.toUpperCase()}', tiempo='${data.tiempo}', interes='${data.interes}', status='${data.status.toUpperCase()}' WHERE idtipo = ${idtipo}`;
+            var sql = `UPDATE tipos_creditos SET idtipo='${data.idtipo}', idempresa='${data.idempresa}', descripcion='${data.descripcion.toUpperCase()}', tipo='${data.tipo.toUpperCase()}', tiempo='${data.tiempo}', interes='${data.interes}', status='ACTIVO' WHERE idtipo = ${idtipo}`;
             connection.query(sql,(err,result)=>{
                 if(!err){ 
                     res.status(200).send({result});
