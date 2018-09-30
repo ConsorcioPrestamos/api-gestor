@@ -1,3 +1,4 @@
+'use strict'
 const moment = require('moment');
 const config = require('../config');
 const dbConnection = config.connection;
@@ -210,9 +211,21 @@ function perfilUpload(req,res){
 	}
 }
 
+function getPerfil(req,res){
+	var idemplado= req.params.id;
+	pool.getConnection((err,connection)=>{
+		var sql = `Select * from imagenes where idpadre=${idemplado} and tipo='PERFIL'`
+		connection.query(sql,(err,result)=>{
+			if(err) return res.status(500).send({message:`Error al obtener la foto de perfil`});
+			res.status(200).send({result});
+		});
+	})
+}
+
 module.exports = {
 	uploadImage,
 	getImagenes,
 	imagenesNuevoCliente,
-	perfilUpload
+	perfilUpload,
+	getPerfil
 }

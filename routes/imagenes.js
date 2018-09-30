@@ -13,5 +13,6 @@ ruta.get('/get', imagenesCtrl.getImagenes);
 // ruta.post('/add/clienteNuevo/:idCliente/:idNegocio',md_upload,imagenesCtrl.clienteNuevoImages)
 ruta.post('/nuevoCliente/:idCliente/:idNegocio', md_upload, imagenesCtrl.imagenesNuevoCliente);
 ruta.post('/perfil/:idpadre/:tipo', md_upload, imagenesCtrl.perfilUpload);
+ruta.get('/perfil/:id', imagenesCtrl.getPerfil);
 
 module.exports = ruta;
