@@ -1,6 +1,9 @@
 'use strict'
 const config = require('../config');
+//coneccion a bd
 var pool = config.pool;
+//servicios
+var jwt = require('../services/jwt');
 
 function updateUsuario(req,res){
     var data = req.body;
@@ -75,13 +78,15 @@ function login(req,res){
             `;
             connection.query(sql,(err,result)=>{
                 if(!err){
-                    res.status(200).send({result});
+                    res.status(200).send({result, token:jwt.createTokenLogin(result[0])});
                 }else res.status(500).send({message:`Error en la consulta a la bd: ${err}`});        
             })
         }else res.status(500).send({message:`Error en la conexion a la bd: ${err}`});
         connection.release();
     });
 }
+
+
 module.exports={
     updateUsuario,
     getUsuarios,

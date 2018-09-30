@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 
 module.exports = {
+    secret : 'devs:maanraimaadreila',
     port: process.env.PORT || 3000, 
     connection:()=>{return mysql.createConnection({ 
         host: "sql149.main-hosting.eu",

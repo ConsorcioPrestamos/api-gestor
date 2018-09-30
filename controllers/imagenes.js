@@ -7,7 +7,10 @@ var mysql = require('mysql');
 var pool = config.pool;
 
 
-
+/*
+tipos de imagenes:
+INE, NEGOCIO, DOMICILIO, CONTRATO, PERFIL
+*/
 function uploadImage(req, res) {
 	// El archivo se manda con el nombre image
 	console.log(req.files)
@@ -54,7 +57,7 @@ function imagenesNuevoCliente(req, res) {
 	var idcliente = req.params.idCliente;
 	var idnegocio = req.params.idNegocio;
 	console.log(`Id del cliente: ${idcliente}, id del negocio ${idnegocio}`);
-	
+
 	if (req.files) {
 		console.log(req.files);
 		pool.getConnection((err, connection) => {
@@ -91,7 +94,7 @@ function imagenesNuevoCliente(req, res) {
 								var public_id = result.public_id
 								var sql = `INSERT imagenes VALUES(null,${idcliente},'${public_id}','DOMICILIO','${url}') `;
 								connection.query(sql,(err,result)=>{
-									if(!err){ 
+									if(!err){
 										console.log(result);
 										flagDomicilio = 1;
 									}
@@ -139,9 +142,9 @@ function imagenesNuevoCliente(req, res) {
 							flagNegocio = 1;
 						}
 					}
-					
+
 				}
-				
+
 				// if(flagIne==1 && flagDomicilio==1 && flagContrato==1 && flagNegocio==1 ){
 				// 	console.log(flagIne==1 +' '+ flagDomicilio==1 +' '+ flagContrato==1 +' '+ flagNegocio==1 )
 				// 	res.status(200).send({result:'Datos guardados'});
@@ -156,8 +159,60 @@ function imagenesNuevoCliente(req, res) {
 	} else return res.status(500).send(`Error, no se mandaron ficheros`);
 }
 
+function perfilUpload(req,res){
+	// El archivo se manda con el nombre image
+	var data = req.params; //idpadre, tipo
+	if (!data.idpadre || !data.tipo) return res.status(500).send('no se enviaron todos los datos');
+	data.tipo = data.tipo.toUpperCase(); 
+	if (data.tipo != 'PERFIL') return res.status(500).send('el tipo no es valido'); //valido que sea de tipo PERFIL
+	if(req.files.image){ //valido que llegara la imagen
+		pool.getConnection((err,connection)=>{
+			if (!err) {
+				var sql = `SELECT * FROM imagenes WHERE idpadre = ${data.idpadre}`
+				connection.query(sql, (err, image) => {
+					if (!err) {
+						if(image.length < 1){ //si no tenia foto de perfil solo guardo una
+							var ruta_temporal = req.files.image.path; //el campo que enviamos se llama image
+							cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+								if (!err) {
+									var url = result.url; var public_id = result.public_id
+									var sql = `INSERT imagenes VALUES(null,${data.idpadre},'${public_id}','${data.tipo.toUpperCase()}','${url}') `;
+									connection.query(sql, (err, result) => {
+										if (!err) {
+											return res.status(200).send({ result });
+										} else return res.status(500).send({ message: `Error, al guardar en la base de datos` });
+									});
+								} else return res.status(500).send({ message: `Error, al subir imagen ine a cloudinary: ${err}` })
+							});
+						}else{ //si ya tenia foto de perfil 
+							cloudinary.v2.uploader.destroy(image[0].public_id, (err,result)=>{
+								if(err) return res.status(500).send({message:`Error al eliminar la antigua foto ${err}`})
+								console.log(result);
+								var ruta_temporal = req.files.image.path; //el campo que enviamos se llama image
+								cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+									if (!err) {
+										var url = result.url; var public_id = result.public_id
+										var sql = `UPDATE imagenes SET public_id='${public_id}', url='${url}' WHERE idpadre=${image[0].idpadre} `;
+										connection.query(sql, (err, result) => {
+											if (!err) {
+												res.status(200).send({ result });
+											} else return res.status(500).send({ message: `Error, al guardar en la base de datos` });
+										});
+									} else return res.status(500).send({ message: `Error, al subir imagen ine a cloudinary: ${err}` })
+								});
+							});
+						}
+					}else return res.status(500).send({ message: `Error, al consultar en la base de datos` });
+				});
+			} else return res.status(500).send({ message: `Error, al conectar con la base de datos` });
+			connection.release();
+		})
+	}
+}
+
 module.exports = {
 	uploadImage,
 	getImagenes,
-	imagenesNuevoCliente
+	imagenesNuevoCliente,
+	perfilUpload
 }
