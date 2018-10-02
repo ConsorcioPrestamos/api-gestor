@@ -213,7 +213,7 @@ function editarTipo(req,res){
 
 
 function preaprobarRechazarCredito(req,res){
-    if(!req.body.status || !req.body.monto_aprobado || !req.body.comentario){ return res.status(403).send({message:`No se enviaron todos los datos`});}
+    if(!req.body.status || !req.body.monto_aprobado){ return res.status(403).send({message:`No se enviaron todos los datos`});}
     var idcredito = req.params.id;
     var status = req.body.status;
     var monto_aprobado = (status=='R') ?0 :req.body.monto_aprobado;
@@ -237,7 +237,7 @@ function preaprobarRechazarCredito(req,res){
 }
 
 function AprobarRechazarCredito(req,res){
-    if(!req.body.status || !req.body.comentario){ return res.status(403).send({message:`No se enviaron todos los datos`});}
+    if(!req.body.status){ return res.status(403).send({message:`No se enviaron todos los datos`});}
     var idcredito = req.params.id;
     var status = req.body.status;
     var comentario = req.body.comentario
