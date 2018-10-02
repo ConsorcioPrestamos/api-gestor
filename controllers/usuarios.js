@@ -78,7 +78,7 @@ function login(req,res){
             `;
             connection.query(sql,(err,result)=>{
                 if(!err){
-                    res.status(200).send({result, token:jwt.createTokenLogin(result[0])});
+                    res.status(200).send({result});
                 }else res.status(500).send({message:`Error en la consulta a la bd: ${err}`});        
             })
         }else res.status(500).send({message:`Error en la conexion a la bd: ${err}`});

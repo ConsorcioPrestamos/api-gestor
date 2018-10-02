@@ -6,7 +6,7 @@ const secret = config.secret
 
 function createTokenLogin(data){
     var payload = {
-        sub:data.id_usuario,
+        sub:data.idusuario,
         id_usuario:data.idusuario,
         id_empleado:data.idempleado,
         id_sucursal:data.id_sucursal,
