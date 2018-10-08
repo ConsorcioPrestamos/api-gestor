@@ -10,4 +10,5 @@ ruta.put('/preaprobar_rechazar/:id',contCreditos.preaprobarRechazarCredito);
 ruta.put('/aprobar_rechazar/:id',contCreditos.AprobarRechazarCredito);
 ruta.post('/add',contCreditos.nuevoCredito);
 ruta.put('/editarTipo',contCreditos.editarTipo);
+ruta.post('/renovar', contCreditos.renovar);
 module.exports = ruta;
