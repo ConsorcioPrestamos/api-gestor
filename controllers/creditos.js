@@ -238,9 +238,9 @@ function preaprobarRechazarCredito(req, res) {
 
 function AprobarRechazarCredito(req, res) {
     if (!req.body.status) { return res.status(403).send({ message: `No se enviaron todos los datos` }); }
-    var idcredito = req.params.id;
+    var idcredito = req.params.id || req.body.idcredito;
     var status = req.body.status;
-    var comentario = req.body.comentario
+    var comentario = req.body.comentario  || 'NA'
     pool.getConnection((err, connection) => {
         if (!err) {
             var sql = `UPDATE creditos SET status='${status}', comentario='${comentario}' WHERE idcredito=${idcredito}`;
@@ -254,6 +254,16 @@ function AprobarRechazarCredito(req, res) {
                             if (err) res.status(500).send({ message: `Error en la consulta ${err}` });
                             if (result.length < 1) res.status(404).send({ message: `No se encontraron clientes` });
                             if (!err && result.length > 0) {
+                                // console.log(result[0]);
+                                // if (result[0].comentario !='null') {
+                                //     var comentario = result[0].comentario;
+                                //     var idpadre = comentario.split('*')[1];
+                                //     console.log(idpadre)
+                                //     let sql = `UPDATE cobros SET status= 'Pagado' WHERE idcredito= ${idpadre}`;
+                                //     connection.query(sql,(err,updated)=>{
+                                //         if(err) return res.status(500).send({message:`Error al actualizar los pagos pendientes ${err}, ${sql}`})
+                                //     });
+                                // }
                                 var idtipocredito = result[0].tipo_credito;
                                 var tiempo = result[0].tiempo;
                                 var idcliente = result[0].idcliente;
@@ -314,7 +324,7 @@ function AprobarRechazarCredito(req, res) {
                                                     }
                                                 });
 
-                                            } else res.status(500).send({ message: `Error al actualizar papu ${err}` });
+                                            } else res.status(500).send({ message: `Error al actualizar papu ${err}, ${sql}` });
                                         });
                                     }
                                 });
@@ -336,13 +346,14 @@ function renovar(req, res) {
 
     var data = req.body;
     console.log(data);
-    if (data.idcredito && data.cantidad) {
+    if (data.idcredito && data.cantidad && data.tipo_credito) {
         var montoSolicitado = data.cantidad;
         pool.getConnection((err, connection) => {
             if (!err) {
                 let sql = `SELECT * FROM creditos WHERE idcredito=${data.idcredito}`;
                 connection.query(sql, (err, creditos) => {
                     var credito = creditos[0];
+                    if(credito.status == 'RENOVADO') return res.status(500).send({message:`Error, este credito ya fue renovado`});
                     if (err) return res.status(500).send({ message: `Error al buscar el credito en la base de datos ${err}, ${sql}` });
                     let sql = `SELECT * FROM cobros WHERE idcredito = ${credito.idcredito}`;
                     connection.query(sql, (err, cobros) => {
@@ -387,18 +398,27 @@ function renovar(req, res) {
                                         '${tiempo}',
                                         '${interes}',
                                         '${data.cantidad}',
-                                        'RENOVACIÓN DEL CREDITO CON FOLIO:${data.idcredito}. NOTA; NO MODIFICAR ESTE COMENTARIO')`;
-                                connection.query(sql,(err,inserted)=>{
-                                    if(!err){
-                                        let sql = `UPDATE cobros SET status= 'Pagado' WHERE idcredito= ${data.idcredito}`;
+                                        'RENOVACIÓN DEL CREDITO CON FOLIO: *${data.idcredito}*. NOTA; NO MODIFICAR ESTE COMENTARIO')`;
+                                connection.query(sql, (err, inserted) => {
+                                    if (!err) {
+                                        let sql = `UPDATE creditos SET status= 'RENOVADO' WHERE idcredito= '${data.idcredito}'`;
                                         connection.query(sql,(err,updated)=>{
                                             if(!err){
-                                                res.status(200).send({result:`Proceso realizado con exito`});
-                                            }else res.status(500).send({message:`Error al renovar los pagos pendientes`});
+                                                let sql = `UPDATE cobros SET status= 'Pagado' WHERE idcredito= '${data.idcredito}'`;
+                                                connection.query(sql,(err)=>{
+                                                    if(err) res.status(500).send({message:`Error al actualizar los cobros pendientes`});
+                                                    console.info(inserted.insertId)
+                                                    req.params.id = inserted.idcredito;
+                                                    req.body.idcredito = inserted.insertId;
+                                                    req.body.status='A'
+                                                    AprobarRechazarCredito(req,res);
+                                                });
+                                                
+                                            }else return res.status(500).send({message:`Error al renovar los pagos pendientes`});
                                         });
-                                    }else return res.status(500).send({message:`Error al actualizar el credito`})
+                                    } else return res.status(500).send({ message: `Error al actualizar el credito ${err}, ${sql}` })
                                 })
-                            } else return res.status(500).send({ message: `Error al consultar en la BD: ${err}` });
+                            } else return res.status(500).send({ message: `Error al consultar en la BD: ${err}, ${sql}` });
                         });
                     });
                 });
