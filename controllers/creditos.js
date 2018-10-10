@@ -337,6 +337,7 @@ function renovar(req, res) {
     var data = req.body;
     console.log(data);
     if (data.idcredito && data.cantidad) {
+        var montoSolicitado = data.cantidad;
         pool.getConnection((err, connection) => {
             if (!err) {
                 let sql = `SELECT * FROM creditos WHERE idcredito=${data.idcredito}`;
@@ -347,7 +348,7 @@ function renovar(req, res) {
                     connection.query(sql, (err, cobros) => {
                         if (err) return res.status(500).send({ message: `Error al buscar el cobro actual en la base de datos ${err}, ${sql}` });
                         let cobroMinimoPagado = cobros[(cobros.length) - 4];
-                        if (cobroMinimoPagado.status != 'Pagado') return res.status(500).send({ message: `Este credito no se puede renovar` });
+                        // if (cobroMinimoPagado.status != 'Pagado') return res.status(500).send({ message: `Este credito no se puede renovar` });
                         var atrazados = 0;
                         var pendientes = 0;
                         for (let cobro of cobros) {
@@ -377,16 +378,16 @@ function renovar(req, res) {
                                         ${credito.idsucursal},
                                         ${credito.idempresa},
                                         '${fecha_actual}',
-                                        '${data.cantidad}',
+                                        '${montoSolicitado}',
                                         '${monto_interes}',
                                         '${monto_conInteres}',
                                         '${data.empleado_captura}',
                                         '${credito.tipo_credito}',
-                                        '?',null,
+                                        'P',null,
                                         '${tiempo}',
                                         '${interes}',
-                                        null,
-                                        'RENOVACIÓN DE UN CREDITO')`;
+                                        '${data.cantidad}',
+                                        'RENOVACIÓN DEL CREDITO CON FOLIO:${data.idcredito}. NOTA; NO MODIFICAR ESTE COMENTARIO')`;
                                 connection.query(sql,(err,inserted)=>{
                                     if(!err){
                                         let sql = `UPDATE cobros SET status= 'Pagado' WHERE idcredito= ${data.idcredito}`;
