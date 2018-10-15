@@ -107,11 +107,11 @@ function getFinales(req, res) {
 
 
 function nuevoCredito(req, res) {
-    // Al llegar un nuevo prestamo se genera 1 encuesta vacia 
+    // Al llegar un nuevo prestamo se genera 1 encuesta vacia
     var data = req.body;
     var sql = '';
     console.log(data);
-    // Valores que no pueden faltar: 
+    // Valores que no pueden faltar:
     if (!data.idcliente
         || !data.idnegocio
         || !data.idsucursal
@@ -158,11 +158,11 @@ function nuevoCredito(req, res) {
 }
 
 function editarTipo(req, res) {
-    // Al llegar un nuevo prestamo se genera 1 encuesta vacia 
+    // Al llegar un nuevo prestamo se genera 1 encuesta vacia
     var data = req.body;
     var sql = '';
     console.log(data);
-    // Valores que no pueden faltar: 
+    // Valores que no pueden faltar:
     if (!data.idcredito) return res.status(403).send('ERROR!, No se enviaron todos los datos...');
     var fecha_actual = moment().format('YYYY-MM-DD');
     pool.getConnection((err, connection) => {
@@ -186,7 +186,7 @@ function editarTipo(req, res) {
                             // sql='INSERT INTO creditos VALUES'+
                             // `(null,${data.idcliente},${data.idnegocio},${data.idsucursal},${data.idempresa},'${fecha_actual}','${data.monto_solicitado}','${monto_interes}','${monto_conInteres}','${data.empleado_captura}','${data.tipo_credito}','?',null,'${tiempo}','${interes}',null,null)`;
                             sql = `
-                                UPDATE creditos SET 
+                                UPDATE creditos SET
                                 monto_solicitado = '${data.monto_solicitado}',
                                 monto_interes = '${monto_interes}',
                                 monto_conInteres = '${monto_conInteres}',
@@ -247,7 +247,7 @@ function AprobarRechazarCredito(req, res) {
             connection.query(sql, (err, result) => {
                 if (!err) {
                     if (status == 'A') {
-                        // se obtienen los datos del prestamo: 
+                        // se obtienen los datos del prestamo:
                         sql = `SELECT * FROM creditos WHERE idcredito=${idcredito}`;
                         connection.query(sql, (err, result) => {
                             console.log(result);
@@ -413,7 +413,7 @@ function renovar(req, res) {
                                                     req.body.status='A'
                                                     AprobarRechazarCredito(req,res);
                                                 });
-                                                
+
                                             }else return res.status(500).send({message:`Error al renovar los pagos pendientes`});
                                         });
                                     } else return res.status(500).send({ message: `Error al actualizar el credito ${err}, ${sql}` })

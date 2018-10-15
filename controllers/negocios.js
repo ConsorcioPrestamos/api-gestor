@@ -6,19 +6,14 @@ function addNegocio(req,res){
     var data = req.body;
     console.log(data);
     
-    if(
-        !data.idcliente ||
-        !data.nombre_negocio || 
-        !data.giro || 
-        !data.tipo || 
-        !data.comentarios || 
-        !data.ubicacion 
-    ) return res.status(500).send({message:`Error, no se enviaron todos los campos`});
-
+    if( !data.idcliente || !data.nombre_negocio ||  !data.giro ||  !data.tipo ||  !data.ubicacion || !data.propietario || !data.antiguedad  ) 
+        return res.status(500).send({message:`Error, no se enviaron todos los campos`});
+    data.comentarios = req.body.comentarios.toUpperCase() || null;
+    data.arrendamiento = req.body.arrendamiento.toUpperCase() || null;
     pool.getConnection((err,connection)=>{
         if(!err){
-            var sql = ` INSERT INTO negocios VALUES (null, ${data.idcliente}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios.toUpperCase()}', '${data.ubicacion}')`;
-            connection.query(sql,(err,result)=>{
+            var sql = ` INSERT INTO negocios VALUES (null, ${data.idcliente}, '${data.nombre_negocio.toUpperCase()}', '${data.giro.toUpperCase()}', '${data.tipo.toUpperCase()}', '${data.comentarios}', '${data.ubicacion}', '${data.propietario.toUpperCase()}', '${data.antiguedad.toUpperCase()}', '${data.arrendamiento}')`;
+            connection.query(sql,(err,result)=>{ //INSERTAR NUEVO NEGOCIO
                 if(!err){
                     var idnegocio = result.insertId;
                     sql = `SELECT * FROM investigaciones WHERE idcliente=${data.idcliente}`;
@@ -31,11 +26,11 @@ function addNegocio(req,res){
                             connection.query(sql,(err,result)=>{
                                 if(!err){
                                     res.status(200).send({result});
-                                }else return res.status(500).send({message:`Error al consultar en la BD: ${err} sql: ${sql}`});
+                                }else return res.status(500).send({message:`Error al generar investigacion: ${err} sql: ${sql}`});
                             }); 
-                        }else return res.status(500).send({message:`Error al consultar en la BD: ${err} sql: ${sql}`});
+                        }else return res.status(500).send({message:`Error al consultar einvestigaciones antiguas: ${err} sql: ${sql}`});
                     });  
-                }else return res.status(500).send({message:`Error al consultar en la BD: ${err} sql: ${sql}`});
+                }else return res.status(500).send({message:`Error al insertar el negocio: ${err} sql: ${sql}`});
             });        
         }else return res.status(500).send({message:`Error al conectar con la bd: ${err}`});
         connection.release();

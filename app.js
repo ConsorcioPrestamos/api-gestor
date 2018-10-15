@@ -6,7 +6,20 @@ const mysql = require('mysql');
 const morgan  = require('morgan');
 var cloudinary = require('cloudinary');
 var addHeaders = require('./middlewares/add_headers');
+const mysqldump = require('mysqldump');
+const moment = require('moment');
 
+const fechaActual = moment().format('YYYY-MM-DD');
+
+mysqldump({
+    connection: {
+        host: "sql149.main-hosting.eu",
+        user: "u262589863_prest", 
+        password: "6LMHbFbNo", 
+        database: "u262589863_prest"
+    },
+    dumpToFile: `./respaldosbd/${fechaActual}.sql`,
+})
 
 // Configuraciones de Cloudinary
 cloudinary.config({
